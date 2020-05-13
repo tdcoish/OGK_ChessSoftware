@@ -9,7 +9,7 @@ height of 1024.
 4) Note, the higher the pixels per unit, the smaller something will appear.
 *************************************************************************************/
 using UnityEngine;
-using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class Board : MonoBehaviour
 {
@@ -35,10 +35,98 @@ public class Board : MonoBehaviour
     public Piece                PF_BlackKnight;
     public Piece                PF_BlackPawn;
 
+    public Text                 _text;
+    public Text                 _hitText;
+    public Text                 _pieceText;
+
+    public PIECE                _selectedPiece;
+    public bool                 _pieceSelected = false;
+    public Vector2Int           _ixSelSq;
+
     // We shouldn't actually be rendering any pieces yet, we should be just storing the info in the squares.
     // Also, we need a reference to all these squares.
 
     void Start()
+    {
+        Init();
+    }
+
+    void Update()
+    {
+        HandleMovingPieces();
+
+        RenderBoard();
+    }
+
+    private void HandleMovingPieces()
+    {
+        if(_pieceSelected)
+        {
+            if(Input.GetMouseButtonDown(0)){
+                Debug.Log("here");
+
+                LayerMask mask = LayerMask.GetMask("Square");
+                Vector2 mousePos2D = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+                RaycastHit2D hit = Physics2D.Raycast(mousePos2D, Vector2.zero);
+                
+                if(hit.collider != null){
+                    if(hit.collider.GetComponent<Square>() != null){
+                        Square s = hit.collider.GetComponent<Square>();
+
+                        // If we have a piece selected, move it to the new square
+                        if(_pieceSelected){
+                            s._d._PCE = _selectedPiece;
+                            // now make the square of _ixSelSq not have that piece anymore.
+                        }
+
+                        Debug.Log(s._d._pos.x);
+                        Debug.Log(s._d._pos.y);
+                        Debug.Log(s._d._PCE);
+                        if(s._d._PCE != PIECE.EMPTY){
+                            _pieceSelected = false;
+                            _selectedPiece = PIECE.EMPTY;
+                            _squares[_ixSelSq.x, _ixSelSq.y]._d._PCE = PIECE.EMPTY;
+                        }
+                        _pieceText.text = "Piece Moved";
+                    }
+                }
+            }
+        }else {
+            if(Input.GetMouseButtonDown(0)){
+                _text.text = "Clicked!";
+
+                LayerMask mask = LayerMask.GetMask("Square");
+                Vector2 mousePos2D = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+                RaycastHit2D hit = Physics2D.Raycast(mousePos2D, Vector2.zero);
+                
+                if(hit.collider != null){
+                    if(hit.collider.GetComponent<Square>() != null){
+                        Square s = hit.collider.GetComponent<Square>();
+
+                        // for now, just return that we've hit a square, and maybe print out it's coordinates.
+                        _hitText.text = "Hit a square";
+
+                        Debug.Log(s._d._pos.x);
+                        Debug.Log(s._d._pos.y);
+                        Debug.Log(s._d._PCE);
+                        if(s._d._PCE != PIECE.EMPTY){
+                            _selectedPiece = s._d._PCE;
+                            _pieceSelected = true;
+                            _ixSelSq.x = s._d._pos.x;
+                            _ixSelSq.y = s._d._pos.y;
+                        }
+                        _pieceText.text = "Piece Selected : " + _selectedPiece;
+                    }
+                }
+            }
+
+        }
+
+    }
+
+    private void Init()
     {
         _data = new DT_BD(8);
         _squares = new Square[8,8];
@@ -64,59 +152,97 @@ public class Board : MonoBehaviour
                     _squares[x,y] = Instantiate(PF_DarkSquare, pos, transform.rotation);
                 }
 
-                _squares[x,y]._d._pos._x = x; _squares[x,y]._d._pos._y = y;
+                _squares[x,y]._d._pos.x = x; _squares[x,y]._d._pos.y = y;
                 _squares[x,y]._d._PCE = PIECE.EMPTY;
 
                 if(y == 0){
                     if(x == 0 || x == 7){
                         _squares[x,y]._d._PCE = PIECE.WHITE_ROOK;
-                        Instantiate(PF_WhiteRook, pos, transform.rotation);
                     }else if(x == 1 || x == 6){
                         _squares[x,y]._d._PCE = PIECE.WHITE_KNIGHT;
-                        Instantiate(PF_WhiteKnight, pos, transform.rotation);
                     }else if(x == 2 || x == 5){
                         _squares[x,y]._d._PCE = PIECE.WHITE_BISHOP;
-                        Instantiate(PF_WhiteBishop, pos, transform.rotation);
                     }else if(x == 3){
                         _squares[x,y]._d._PCE = PIECE.WHITE_QUEEN;
-                        Instantiate(PF_WhiteQueen, pos, transform.rotation);
                     }else if(x == 4){
                         _squares[x,y]._d._PCE = PIECE.WHITE_KING;
-                        Instantiate(PF_WhiteKing, pos, transform.rotation);
                     }
                 }
                 if(y == 1){
-                    Instantiate(PF_WhitePawn, pos, transform.rotation);
                     _squares[x,y]._d._PCE = PIECE.WHITE_PAWN;
                 }
                 if(y == 6){
                     _squares[x,y]._d._PCE = PIECE.BLACK_PAWN;
-                    Instantiate(PF_BlackPawn, pos, transform.rotation);
                 }
                 if(y == 7){
                     if(x == 0 || x == 7){
                         _squares[x,y]._d._PCE = PIECE.BLACK_ROOK;
-                        Instantiate(PF_BlackRook, pos, transform.rotation);
                     }else if(x == 1 || x == 6){
                         _squares[x,y]._d._PCE = PIECE.BLACK_KNIGHT;
-                        Instantiate(PF_BlackKnight, pos, transform.rotation);
                     }else if(x == 2 || x == 5){
                         _squares[x,y]._d._PCE = PIECE.BLACK_BISHOP;
-                        Instantiate(PF_BlackBishop, pos, transform.rotation);
                     }else if(x == 3){
                         _squares[x,y]._d._PCE = PIECE.BLACK_QUEEN;
-                        Instantiate(PF_BlackQueen, pos, transform.rotation);
                     }else if(x == 4){
                         _squares[x,y]._d._PCE = PIECE.BLACK_KING;
-                        Instantiate(PF_BlackKing, pos, transform.rotation);
                     }
                 }
             }
         }
+
+        RenderBoard();
     }
 
-    void Update()
+    // Basically, delete all the pieces, then recreate them.
+    void RenderBoard()
     {
-        
+        // destroy existing pieces.
+        Piece[] pieces = FindObjectsOfType<Piece>();
+        foreach(Piece p in pieces)
+        {
+            Destroy(p.gameObject);
+        }
+
+        // re-place new pieces.
+        for(int y=0; y<8; y++)
+        {
+            for(int x=0; x<8; x++)
+            {
+                if(_squares[x,y]._d._PCE == PIECE.EMPTY){
+                    continue;
+                }
+                
+                Vector2 pos = transform.position;
+                // manually shifting the boxes around by pixel. Pivot is center, hence the 32.
+                pos.x -= 256 - 32; pos.x += 64*x;
+                pos.y -= 256 - 32; pos.y += 64*y;
+
+                if(_squares[x,y]._d._PCE == PIECE.WHITE_PAWN){
+                    Instantiate(PF_WhitePawn, pos, transform.rotation);
+                } else if(_squares[x,y]._d._PCE == PIECE.WHITE_BISHOP){
+                    Instantiate(PF_WhiteBishop, pos, transform.rotation);
+                } else if(_squares[x,y]._d._PCE == PIECE.WHITE_KNIGHT){
+                    Instantiate(PF_WhiteKnight, pos, transform.rotation);
+                } else if(_squares[x,y]._d._PCE == PIECE.WHITE_ROOK){
+                    Instantiate(PF_WhiteRook, pos, transform.rotation);
+                } else if(_squares[x,y]._d._PCE == PIECE.WHITE_QUEEN){
+                    Instantiate(PF_WhiteQueen, pos, transform.rotation);
+                } else if(_squares[x,y]._d._PCE == PIECE.WHITE_KING){
+                    Instantiate(PF_WhiteKing, pos, transform.rotation);
+                } else if(_squares[x,y]._d._PCE == PIECE.BLACK_PAWN){
+                    Instantiate(PF_BlackPawn, pos, transform.rotation);
+                } else if(_squares[x,y]._d._PCE == PIECE.BLACK_BISHOP){
+                    Instantiate(PF_BlackBishop, pos, transform.rotation);
+                } else if(_squares[x,y]._d._PCE == PIECE.BLACK_KNIGHT){
+                    Instantiate(PF_BlackKnight, pos, transform.rotation);
+                } else if(_squares[x,y]._d._PCE == PIECE.BLACK_ROOK){
+                    Instantiate(PF_BlackRook, pos, transform.rotation);
+                } else if(_squares[x,y]._d._PCE == PIECE.BLACK_QUEEN){
+                    Instantiate(PF_BlackQueen, pos, transform.rotation);
+                } else if(_squares[x,y]._d._PCE == PIECE.BLACK_KING){
+                    Instantiate(PF_BlackKing, pos, transform.rotation);
+                }
+            }
+        }
     }
 }
