@@ -9,6 +9,7 @@ height of 1024.
 4) Note, the higher the pixels per unit, the smaller something will appear.
 *************************************************************************************/
 using UnityEngine;
+using System.Collections.Generic;
 
 public class Board : MonoBehaviour
 {
@@ -16,6 +17,22 @@ public class Board : MonoBehaviour
     public Square               PF_DarkSquare;
 
     public DT_BD                _data;
+
+    public Piece                PF_WhiteKing;
+    public Piece                PF_WhiteQueen;
+    public Piece                PF_WhiteRook;
+    public Piece                PF_WhiteBishop;
+    public Piece                PF_WhiteKnight;
+    public Piece                PF_WhitePawn;
+
+
+    public Piece                PF_BlackKing;
+    public Piece                PF_BlackQueen;
+    public Piece                PF_BlackRook;
+    public Piece                PF_BlackBishop;
+    public Piece                PF_BlackKnight;
+    public Piece                PF_BlackPawn;
+
     void Start()
     {
         _data = new DT_BD(8);
@@ -38,6 +55,39 @@ public class Board : MonoBehaviour
                 {
                     // spawn a dark square here.
                     Instantiate(PF_DarkSquare, pos, transform.rotation);
+                }
+
+                if(y == 0){
+                    if(x == 0 || x == 7){
+                        Instantiate(PF_WhiteRook, pos, transform.rotation);
+                    }else if(x == 1 || x == 6){
+                        Instantiate(PF_WhiteKnight, pos, transform.rotation);
+                    }else if(x == 2 || x == 5){
+                        Instantiate(PF_WhiteBishop, pos, transform.rotation);
+                    }else if(x == 3){
+                        Instantiate(PF_WhiteQueen, pos, transform.rotation);
+                    }else if(x == 4){
+                        Instantiate(PF_WhiteKing, pos, transform.rotation);
+                    }
+                }
+                if(y == 1){
+                    Instantiate(PF_WhitePawn, pos, transform.rotation);
+                }
+                if(y == 6){
+                    Instantiate(PF_BlackPawn, pos, transform.rotation);
+                }
+                if(y == 7){
+                    if(x == 0 || x == 7){
+                        Instantiate(PF_BlackRook, pos, transform.rotation);
+                    }else if(x == 1 || x == 6){
+                        Instantiate(PF_BlackKnight, pos, transform.rotation);
+                    }else if(x == 2 || x == 5){
+                        Instantiate(PF_BlackBishop, pos, transform.rotation);
+                    }else if(x == 3){
+                        Instantiate(PF_BlackQueen, pos, transform.rotation);
+                    }else if(x == 4){
+                        Instantiate(PF_BlackKing, pos, transform.rotation);
+                    }
                 }
             }
         }

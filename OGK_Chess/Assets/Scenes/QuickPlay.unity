@@ -308,6 +308,30 @@ MonoBehaviour:
     type: 3}
   PF_DarkSquare: {fileID: 6157361186458933188, guid: 77f24e33496530b4b867c12d714cc9d9,
     type: 3}
+  PF_WhiteKing: {fileID: 452082378410713204, guid: c0a2b6bd5e178504aa702c8a61e35fb6,
+    type: 3}
+  PF_WhiteQueen: {fileID: 9028339222907501140, guid: 6028f98c97c895d40a833aa2c200b3ac,
+    type: 3}
+  PF_WhiteRook: {fileID: 4430294616027478744, guid: f263ed05285645f4bbe207bc9887f0b0,
+    type: 3}
+  PF_WhiteBishop: {fileID: 655273476911312025, guid: 7a8e3244dbae79445801e7f28428f8de,
+    type: 3}
+  PF_WhiteKnight: {fileID: 8263131525139427596, guid: 366faae4436cab3479dc6443a22c103d,
+    type: 3}
+  PF_WhitePawn: {fileID: 135830735067427500, guid: 6258293cc11b012478dd5216ceece988,
+    type: 3}
+  PF_BlackKing: {fileID: 4196013775351326901, guid: a826112175d3b904196c34bc6d4607ea,
+    type: 3}
+  PF_BlackQueen: {fileID: 7316681148729033711, guid: 21d85846cfd7b424c8b48cf2b6bd838e,
+    type: 3}
+  PF_BlackRook: {fileID: 1912269912974645850, guid: 91de8185ff656774eb32ff7e0127ddbc,
+    type: 3}
+  PF_BlackBishop: {fileID: 6477025589889100921, guid: 37a8dd7954668f64d9773286e6ba152c,
+    type: 3}
+  PF_BlackKnight: {fileID: 2335724545184199844, guid: 5008c7b5a2695324d894eb64e09a6dc4,
+    type: 3}
+  PF_BlackPawn: {fileID: 1790231777117082925, guid: 59487da36d08bf84f88a6ecc84e37454,
+    type: 3}
 --- !u!1 &1176597246
 GameObject:
   m_ObjectHideFlags: 0
