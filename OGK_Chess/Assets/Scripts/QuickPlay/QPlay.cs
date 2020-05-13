@@ -12,6 +12,10 @@ using UnityEngine;
 // Can click again to move piece to wherever.
 // Show this.
 
+// Now, images are correct, game objects are correct
+// However, we now need a way to switch them over to the new square.
+// Let's make code that at least shows which piece you clicked on.
+
 public class QPlay : MonoBehaviour
 {
     public DT_BD                _board;
@@ -20,7 +24,7 @@ public class QPlay : MonoBehaviour
     {
         _board = new DT_BD();
 
-        
+
     }
 
     void Update()

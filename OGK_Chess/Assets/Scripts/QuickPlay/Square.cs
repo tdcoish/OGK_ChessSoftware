@@ -5,13 +5,6 @@ using UnityEngine;
 
 public class Square : MonoBehaviour
 {
-    void Start()
-    {
-        
-    }
+    public DT_SQ                _d;
 
-    void Update()
-    {
-        
-    }
 }
