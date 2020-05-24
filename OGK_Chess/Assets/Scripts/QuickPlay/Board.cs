@@ -39,6 +39,9 @@ public class Board : MonoBehaviour
     public Text                 _hitText;
     public Text                 _pieceText;
 
+    public Text                 _textMoveLegal;
+    public Text                 _textMoveList;
+
     public PIECE                _selectedPiece;
     public bool                 _pieceSelected = false;
     public Vector2Int           _ixSelSq;
@@ -63,67 +66,190 @@ public class Board : MonoBehaviour
         if(_pieceSelected)
         {
             if(Input.GetMouseButtonDown(0)){
-                Debug.Log("here");
-
-                LayerMask mask = LayerMask.GetMask("Square");
-                Vector2 mousePos2D = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-                RaycastHit2D hit = Physics2D.Raycast(mousePos2D, Vector2.zero);
-                
-                if(hit.collider != null){
-                    if(hit.collider.GetComponent<Square>() != null){
-                        Square s = hit.collider.GetComponent<Square>();
-
-                        // If we have a piece selected, move it to the new square
-                        if(_pieceSelected){
-                            s._d._PCE = _selectedPiece;
-                            // now make the square of _ixSelSq not have that piece anymore.
-                        }
-
-                        Debug.Log(s._d._pos.x);
-                        Debug.Log(s._d._pos.y);
-                        Debug.Log(s._d._PCE);
-                        if(s._d._PCE != PIECE.EMPTY){
-                            _pieceSelected = false;
-                            _selectedPiece = PIECE.EMPTY;
-                            _squares[_ixSelSq.x, _ixSelSq.y]._d._PCE = PIECE.EMPTY;
-                        }
-                        _pieceText.text = "Piece Moved";
-                    }
-                }
+                HandleSelecingDeselecting(true);
             }
+            _textMoveList.text = ShowMoveListForSelectedPiece(_selectedPiece, _ixSelSq);
         }else {
             if(Input.GetMouseButtonDown(0)){
-                _text.text = "Clicked!";
-
-                LayerMask mask = LayerMask.GetMask("Square");
-                Vector2 mousePos2D = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-                RaycastHit2D hit = Physics2D.Raycast(mousePos2D, Vector2.zero);
-                
-                if(hit.collider != null){
-                    if(hit.collider.GetComponent<Square>() != null){
-                        Square s = hit.collider.GetComponent<Square>();
-
-                        // for now, just return that we've hit a square, and maybe print out it's coordinates.
-                        _hitText.text = "Hit a square";
-
-                        Debug.Log(s._d._pos.x);
-                        Debug.Log(s._d._pos.y);
-                        Debug.Log(s._d._PCE);
-                        if(s._d._PCE != PIECE.EMPTY){
-                            _selectedPiece = s._d._PCE;
-                            _pieceSelected = true;
-                            _ixSelSq.x = s._d._pos.x;
-                            _ixSelSq.y = s._d._pos.y;
-                        }
-                        _pieceText.text = "Piece Selected : " + _selectedPiece;
-                    }
-                }
+                HandleSelecingDeselecting(false);
             }
-
+            _textMoveList.text = ShowMoveListForSelectedPiece(_selectedPiece, _ixSelSq);
         }
 
+    }
+
+    // So they know which piece it is, and where it is.
+    private string ShowMoveListForSelectedPiece(PIECE piece, Vector2Int ix)
+    {
+        if(piece == PIECE.EMPTY){
+            return "No piece selected";
+        }
+
+        // have to go from 0-7 to 1-8
+        ix.x += 1;
+        ix.y += 1;
+
+        Debug.Log(ix);
+
+        string sMoves = "";
+        if(piece == PIECE.WHITE_KNIGHT){
+            sMoves += (ix.x-2) + "," + (ix.y+1);
+            sMoves += "\n" + (ix.x-2) + "," + (ix.y-1);
+            sMoves += "\n" + (ix.x+2) + "," + (ix.y+1);
+            sMoves += "\n" + (ix.x+2) + "," + (ix.y-1);
+            sMoves += "\n" + (ix.x - 1) + "," + (ix.y - 2);
+            sMoves += "\n" + (ix.x - 1) + "," + (ix.y + 2);
+            sMoves += "\n" + (ix.x + 1) + "," + (ix.y - 2);
+            sMoves += "\n" + (ix.x + 1) + "," + (ix.y + 2);
+
+            return sMoves;
+        }
+
+        // here we move all the way along a diagonal.
+        if(piece == PIECE.WHITE_BISHOP)
+        {
+            int xTemp = ix.x;
+            int yTemp = ix.y;
+            while(xTemp < 8 && yTemp < 8)
+            {
+                xTemp++; yTemp++;
+                sMoves += "\n" + xTemp + "," + yTemp;
+            }
+            xTemp = ix.x;
+            yTemp = ix.y;
+            while(xTemp > 1 && yTemp > 1)
+            {
+                xTemp--; yTemp--; 
+                sMoves += "\n" + xTemp + "," + yTemp;
+            }
+            xTemp = ix.x;
+            yTemp = ix.y;
+            while(xTemp > 1 && yTemp < 8)
+            {
+                xTemp--; yTemp++; 
+                sMoves += "\n" + xTemp + "," + yTemp;
+            }
+            xTemp = ix.x;
+            yTemp = ix.y;
+            while(xTemp < 8 && yTemp > 1)
+            {
+                xTemp++; yTemp--; 
+                sMoves += "\n" + xTemp + "," + yTemp;
+            }
+            return sMoves;
+        }
+
+        // can move all the way in x or all the way in y
+        if(piece == PIECE.WHITE_ROOK)
+        {
+            for(int x = 1; x<9; x++)
+            {
+                sMoves += x + "," + ix.y + "\n";
+            }
+            for(int y=1; y<9; y++){
+                sMoves += ix.x + "," + y + "\n";
+            }
+            return sMoves;
+        }
+
+        // queen, maybe just return rook and bishop moves?
+
+        // also, if we can capture, we can move diagonally.
+        // pawn, have to factor in en passant, as well as two squares on first move.
+        if(piece == PIECE.WHITE_PAWN)
+        {
+            sMoves += ix.x + "," + (ix.y+1) + "\n";
+            // can't know en passant yet
+            if(ix.y == 2){
+                sMoves += ix.x + "," + (ix.y+2) + "\n";
+            }
+            return sMoves;
+        }
+
+        if(piece == PIECE.WHITE_QUEEN)
+        {
+            return "rook plus bishop";
+        }
+
+        if(piece == PIECE.WHITE_KING){
+            int x = ix.x-1;
+            sMoves += x + "," + (ix.y-1) + "\n";
+            sMoves += x + "," + (ix.y+1) + "\n";
+            sMoves += x + "," + (ix.y) + "\n";
+            x += 2;
+            sMoves += x + "," + (ix.y-1) + "\n";
+            sMoves += x + "," + (ix.y+1) + "\n";
+            sMoves += x + "," + (ix.y) + "\n";
+            x = ix.x;
+            sMoves += x + "," + (ix.y+1) + "\n";
+            sMoves += x + "," + (ix.y-1) + "\n";
+            return sMoves;
+        }
+
+
+        return "error finding piece moves";
+    }
+
+    private void HandleSelecingDeselecting(bool curSelected)
+    {
+        if(curSelected)
+        {
+            Debug.Log("here");
+
+            LayerMask mask = LayerMask.GetMask("Square");
+            Vector2 mousePos2D = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+            RaycastHit2D hit = Physics2D.Raycast(mousePos2D, Vector2.zero);
+            
+            if(hit.collider != null){
+                if(hit.collider.GetComponent<Square>() != null){
+                    Square s = hit.collider.GetComponent<Square>();
+
+                    // If we have a piece selected, move it to the new square
+                    if(_pieceSelected){
+                        s._d._PCE = _selectedPiece;
+                        // now make the square of _ixSelSq not have that piece anymore.
+                    }
+
+                    Debug.Log(s._d._pos.x);
+                    Debug.Log(s._d._pos.y);
+                    Debug.Log(s._d._PCE);
+                    if(s._d._PCE != PIECE.EMPTY){
+                        _pieceSelected = false;
+                        _selectedPiece = PIECE.EMPTY;
+                        _squares[_ixSelSq.x, _ixSelSq.y]._d._PCE = PIECE.EMPTY;
+                    }
+                    _pieceText.text = "Piece Moved";
+                }
+            }
+        }else{
+            _text.text = "Clicked!";
+
+            LayerMask mask = LayerMask.GetMask("Square");
+            Vector2 mousePos2D = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+            RaycastHit2D hit = Physics2D.Raycast(mousePos2D, Vector2.zero);
+            
+            if(hit.collider != null){
+                if(hit.collider.GetComponent<Square>() != null){
+                    Square s = hit.collider.GetComponent<Square>();
+
+                    // for now, just return that we've hit a square, and maybe print out it's coordinates.
+                    _hitText.text = "Hit a square";
+
+                    Debug.Log(s._d._pos.x);
+                    Debug.Log(s._d._pos.y);
+                    Debug.Log(s._d._PCE);
+                    if(s._d._PCE != PIECE.EMPTY){
+                        _selectedPiece = s._d._PCE;
+                        _pieceSelected = true;
+                        _ixSelSq.x = s._d._pos.x;
+                        _ixSelSq.y = s._d._pos.y;
+                    }
+                    _pieceText.text = "Piece Selected : " + _selectedPiece;
+                }
+            }
+        }
     }
 
     private void Init()
