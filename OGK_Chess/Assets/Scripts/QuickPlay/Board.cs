@@ -10,6 +10,7 @@ height of 1024.
 *************************************************************************************/
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class Board : MonoBehaviour
 {
@@ -61,6 +62,22 @@ public class Board : MonoBehaviour
         RenderBoard();
     }
 
+    public string ConvertMoveListToText(List<SquareXY> moves)
+    {
+        if(moves == null){
+            return "No moves selected, list null";
+        }
+        if(moves.Count == 0){
+            return "Zero move count";
+        }
+        string sMoves = "";
+        for(int i=0; i<moves.Count; i++)
+        {
+            sMoves += moves[i].x + "," + moves[i].y + "\n";
+        }
+        return sMoves;
+    }
+
     private void HandleMovingPieces()
     {
         if(_pieceSelected)
@@ -68,21 +85,22 @@ public class Board : MonoBehaviour
             if(Input.GetMouseButtonDown(0)){
                 HandleSelecingDeselecting(true);
             }
-            _textMoveList.text = ShowMoveListForSelectedPiece(_selectedPiece, _ixSelSq);
+            _textMoveList.text = ConvertMoveListToText(ShowMoveListForSelectedPiece(_selectedPiece, _ixSelSq));
         }else {
             if(Input.GetMouseButtonDown(0)){
                 HandleSelecingDeselecting(false);
             }
-            _textMoveList.text = ShowMoveListForSelectedPiece(_selectedPiece, _ixSelSq);
+            _textMoveList.text = ConvertMoveListToText(ShowMoveListForSelectedPiece(_selectedPiece, _ixSelSq));
         }
 
     }
 
-    // So they know which piece it is, and where it is.
-    private string ShowMoveListForSelectedPiece(PIECE piece, Vector2Int ix)
+        // So they know which piece it is, and where it is.
+    private List<SquareXY> ShowMoveListForSelectedPiece(PIECE piece, Vector2Int ix)
     {
         if(piece == PIECE.EMPTY){
-            return "No piece selected";
+            Debug.Log("No piece selected");
+            return null;
         }
 
         // have to go from 0-7 to 1-8
@@ -91,16 +109,42 @@ public class Board : MonoBehaviour
 
         Debug.Log(ix);
 
-        string sMoves = "";
+        List<SquareXY> sMoves = new List<SquareXY>();
         if(piece == PIECE.WHITE_KNIGHT){
-            sMoves += (ix.x-2) + "," + (ix.y+1);
-            sMoves += "\n" + (ix.x-2) + "," + (ix.y-1);
-            sMoves += "\n" + (ix.x+2) + "," + (ix.y+1);
-            sMoves += "\n" + (ix.x+2) + "," + (ix.y-1);
-            sMoves += "\n" + (ix.x - 1) + "," + (ix.y - 2);
-            sMoves += "\n" + (ix.x - 1) + "," + (ix.y + 2);
-            sMoves += "\n" + (ix.x + 1) + "," + (ix.y - 2);
-            sMoves += "\n" + (ix.x + 1) + "," + (ix.y + 2);
+            SquareXY move;
+            move = new SquareXY(ix.x-2, ix.y+1);
+            if(TestMoveLegit(move)){
+                sMoves.Add(move);
+            }
+
+            move = new SquareXY((ix.x-2), (ix.y-1));
+            if(TestMoveLegit(move)){
+                sMoves.Add(move);
+            }
+            move = new SquareXY((ix.x+2), (ix.y+1));
+            if(TestMoveLegit(move)){
+                sMoves.Add(move);
+            }
+            move = new SquareXY((ix.x+2), (ix.y-1));
+            if(TestMoveLegit(move)){
+                sMoves.Add(move);
+            }
+            move = new SquareXY((ix.x -1), (ix.y - 2));
+            if(TestMoveLegit(move)){
+                sMoves.Add(move);
+            }
+            move = new SquareXY((ix.x -1), (ix.y + 2));
+            if(TestMoveLegit(move)){
+                sMoves.Add(move);
+            }
+            move = new SquareXY((ix.x +1), (ix.y - 2));
+            if(TestMoveLegit(move)){
+                sMoves.Add(move);
+            }
+            move = new SquareXY((ix.x +1), (ix.y + 2));
+            if(TestMoveLegit(move)){
+                sMoves.Add(move);
+            }
 
             return sMoves;
         }
@@ -113,28 +157,28 @@ public class Board : MonoBehaviour
             while(xTemp < 8 && yTemp < 8)
             {
                 xTemp++; yTemp++;
-                sMoves += "\n" + xTemp + "," + yTemp;
+                sMoves.Add(new SquareXY(xTemp, yTemp));
             }
             xTemp = ix.x;
             yTemp = ix.y;
             while(xTemp > 1 && yTemp > 1)
             {
                 xTemp--; yTemp--; 
-                sMoves += "\n" + xTemp + "," + yTemp;
+                sMoves.Add(new SquareXY(xTemp, yTemp));
             }
             xTemp = ix.x;
             yTemp = ix.y;
             while(xTemp > 1 && yTemp < 8)
             {
                 xTemp--; yTemp++; 
-                sMoves += "\n" + xTemp + "," + yTemp;
+                sMoves.Add(new SquareXY(xTemp, yTemp));
             }
             xTemp = ix.x;
             yTemp = ix.y;
             while(xTemp < 8 && yTemp > 1)
             {
                 xTemp++; yTemp--; 
-                sMoves += "\n" + xTemp + "," + yTemp;
+                sMoves.Add(new SquareXY(xTemp, yTemp));
             }
             return sMoves;
         }
@@ -144,10 +188,10 @@ public class Board : MonoBehaviour
         {
             for(int x = 1; x<9; x++)
             {
-                sMoves += x + "," + ix.y + "\n";
+                sMoves.Add(new SquareXY(x, ix.y));
             }
             for(int y=1; y<9; y++){
-                sMoves += ix.x + "," + y + "\n";
+                sMoves.Add(new SquareXY(ix.x, y));
             }
             return sMoves;
         }
@@ -158,37 +202,164 @@ public class Board : MonoBehaviour
         // pawn, have to factor in en passant, as well as two squares on first move.
         if(piece == PIECE.WHITE_PAWN)
         {
-            sMoves += ix.x + "," + (ix.y+1) + "\n";
+            sMoves.Add(new SquareXY(ix.x, (ix.y+1)));
             // can't know en passant yet
             if(ix.y == 2){
-                sMoves += ix.x + "," + (ix.y+2) + "\n";
+                sMoves.Add(new SquareXY(ix.x, (ix.y+2)));
             }
             return sMoves;
         }
 
         if(piece == PIECE.WHITE_QUEEN)
         {
-            return "rook plus bishop";
+            Debug.Log("Queen not implemented yet");
+            return null;
         }
 
         if(piece == PIECE.WHITE_KING){
             int x = ix.x-1;
-            sMoves += x + "," + (ix.y-1) + "\n";
-            sMoves += x + "," + (ix.y+1) + "\n";
-            sMoves += x + "," + (ix.y) + "\n";
+            sMoves.Add(new SquareXY(x, (ix.y-1)));
+            sMoves.Add(new SquareXY(x, (ix.y+1)));
+            sMoves.Add(new SquareXY(x, (ix.y)));
             x += 2;
-            sMoves += x + "," + (ix.y-1) + "\n";
-            sMoves += x + "," + (ix.y+1) + "\n";
-            sMoves += x + "," + (ix.y) + "\n";
+            sMoves.Add(new SquareXY(x, (ix.y-1)));
+            sMoves.Add(new SquareXY(x, (ix.y+1)));
+            sMoves.Add(new SquareXY(x, (ix.y)));
             x = ix.x;
-            sMoves += x + "," + (ix.y+1) + "\n";
-            sMoves += x + "," + (ix.y-1) + "\n";
+            sMoves.Add(new SquareXY(x, (ix.y+1)));
+            sMoves.Add(new SquareXY(x, (ix.y-1)));
             return sMoves;
         }
 
-
-        return "error finding piece moves";
+        Debug.Log("error finding piece moves");
+        return null;
     }
+
+    // For now, only test if on board
+    public bool TestMoveLegit(SquareXY move)
+    {
+        if(move.x >= 0 && move.x < 8)
+        {
+            if(move.y >= 0 && move.y < 8)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // // So they know which piece it is, and where it is.
+    // private string ShowMoveListForSelectedPiece(PIECE piece, Vector2Int ix)
+    // {
+    //     if(piece == PIECE.EMPTY){
+    //         return "No piece selected";
+    //     }
+
+    //     // have to go from 0-7 to 1-8
+    //     ix.x += 1;
+    //     ix.y += 1;
+
+    //     Debug.Log(ix);
+
+    //     string sMoves = "";
+    //     if(piece == PIECE.WHITE_KNIGHT){
+
+    //         sMoves += (ix.x-2) + "," + (ix.y+1);
+    //         sMoves += "\n" + (ix.x-2) + "," + (ix.y-1);
+    //         sMoves += "\n" + (ix.x+2) + "," + (ix.y+1);
+    //         sMoves += "\n" + (ix.x+2) + "," + (ix.y-1);
+    //         sMoves += "\n" + (ix.x - 1) + "," + (ix.y - 2);
+    //         sMoves += "\n" + (ix.x - 1) + "," + (ix.y + 2);
+    //         sMoves += "\n" + (ix.x + 1) + "," + (ix.y - 2);
+    //         sMoves += "\n" + (ix.x + 1) + "," + (ix.y + 2);
+
+    //         return sMoves;
+    //     }
+
+    //     // here we move all the way along a diagonal.
+    //     if(piece == PIECE.WHITE_BISHOP)
+    //     {
+    //         int xTemp = ix.x;
+    //         int yTemp = ix.y;
+    //         while(xTemp < 8 && yTemp < 8)
+    //         {
+    //             xTemp++; yTemp++;
+    //             sMoves += "\n" + xTemp + "," + yTemp;
+    //         }
+    //         xTemp = ix.x;
+    //         yTemp = ix.y;
+    //         while(xTemp > 1 && yTemp > 1)
+    //         {
+    //             xTemp--; yTemp--; 
+    //             sMoves += "\n" + xTemp + "," + yTemp;
+    //         }
+    //         xTemp = ix.x;
+    //         yTemp = ix.y;
+    //         while(xTemp > 1 && yTemp < 8)
+    //         {
+    //             xTemp--; yTemp++; 
+    //             sMoves += "\n" + xTemp + "," + yTemp;
+    //         }
+    //         xTemp = ix.x;
+    //         yTemp = ix.y;
+    //         while(xTemp < 8 && yTemp > 1)
+    //         {
+    //             xTemp++; yTemp--; 
+    //             sMoves += "\n" + xTemp + "," + yTemp;
+    //         }
+    //         return sMoves;
+    //     }
+
+    //     // can move all the way in x or all the way in y
+    //     if(piece == PIECE.WHITE_ROOK)
+    //     {
+    //         for(int x = 1; x<9; x++)
+    //         {
+    //             sMoves += x + "," + ix.y + "\n";
+    //         }
+    //         for(int y=1; y<9; y++){
+    //             sMoves += ix.x + "," + y + "\n";
+    //         }
+    //         return sMoves;
+    //     }
+
+    //     // queen, maybe just return rook and bishop moves?
+
+    //     // also, if we can capture, we can move diagonally.
+    //     // pawn, have to factor in en passant, as well as two squares on first move.
+    //     if(piece == PIECE.WHITE_PAWN)
+    //     {
+    //         sMoves += ix.x + "," + (ix.y+1) + "\n";
+    //         // can't know en passant yet
+    //         if(ix.y == 2){
+    //             sMoves += ix.x + "," + (ix.y+2) + "\n";
+    //         }
+    //         return sMoves;
+    //     }
+
+    //     if(piece == PIECE.WHITE_QUEEN)
+    //     {
+    //         return "rook plus bishop";
+    //     }
+
+    //     if(piece == PIECE.WHITE_KING){
+    //         int x = ix.x-1;
+    //         sMoves += x + "," + (ix.y-1) + "\n";
+    //         sMoves += x + "," + (ix.y+1) + "\n";
+    //         sMoves += x + "," + (ix.y) + "\n";
+    //         x += 2;
+    //         sMoves += x + "," + (ix.y-1) + "\n";
+    //         sMoves += x + "," + (ix.y+1) + "\n";
+    //         sMoves += x + "," + (ix.y) + "\n";
+    //         x = ix.x;
+    //         sMoves += x + "," + (ix.y+1) + "\n";
+    //         sMoves += x + "," + (ix.y-1) + "\n";
+    //         return sMoves;
+    //     }
+
+
+    //     return "error finding piece moves";
+    // }
 
     private void HandleSelecingDeselecting(bool curSelected)
     {

@@ -23,6 +23,15 @@ public struct DT_BD
     public DT_SQ[,]         _Squares;
 }
 
+public class SquareXY{
+    public int x;
+    public int y;
+    public SquareXY(int xPassed, int yPassed){
+        x = xPassed;
+        y = yPassed;
+    }
+}
+
 
 public enum SQUARE_COLOUR{WHITE, BLACK};
 public enum PIECE{EMPTY, WHITE_KING, BLACK_KING, WHITE_QUEEN, BLACK_QUEEN, WHITE_ROOK, BLACK_ROOK, WHITE_BISHOP, BLACK_BISHOP, WHITE_KNIGHT, BLACK_KNIGHT, WHITE_PAWN, BLACK_PAWN};
