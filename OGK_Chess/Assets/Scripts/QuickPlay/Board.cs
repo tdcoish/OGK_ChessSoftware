@@ -73,7 +73,8 @@ public class Board : MonoBehaviour
         string sMoves = "";
         for(int i=0; i<moves.Count; i++)
         {
-            sMoves += moves[i].x + "," + moves[i].y + "\n";
+            // Plus one because internally board is 0,0 -> 7,7, but humans read as 1,1 -> 8,8
+            sMoves += moves[i].x+1 + "," + (moves[i].y+1) + "\n";
         }
         return sMoves;
     }
@@ -103,46 +104,40 @@ public class Board : MonoBehaviour
             return null;
         }
 
-        // have to go from 0-7 to 1-8
-        ix.x += 1;
-        ix.y += 1;
-
-        Debug.Log(ix);
-
         List<SquareXY> sMoves = new List<SquareXY>();
         if(piece == PIECE.WHITE_KNIGHT){
             SquareXY move;
             move = new SquareXY(ix.x-2, ix.y+1);
-            if(TestMoveLegit(move)){
+            if(TestMoveLegit(move, true)){
                 sMoves.Add(move);
             }
 
             move = new SquareXY((ix.x-2), (ix.y-1));
-            if(TestMoveLegit(move)){
+            if(TestMoveLegit(move, true)){
                 sMoves.Add(move);
             }
             move = new SquareXY((ix.x+2), (ix.y+1));
-            if(TestMoveLegit(move)){
+            if(TestMoveLegit(move, true)){
                 sMoves.Add(move);
             }
             move = new SquareXY((ix.x+2), (ix.y-1));
-            if(TestMoveLegit(move)){
+            if(TestMoveLegit(move, true)){
                 sMoves.Add(move);
             }
             move = new SquareXY((ix.x -1), (ix.y - 2));
-            if(TestMoveLegit(move)){
+            if(TestMoveLegit(move, true)){
                 sMoves.Add(move);
             }
             move = new SquareXY((ix.x -1), (ix.y + 2));
-            if(TestMoveLegit(move)){
+            if(TestMoveLegit(move, true)){
                 sMoves.Add(move);
             }
             move = new SquareXY((ix.x +1), (ix.y - 2));
-            if(TestMoveLegit(move)){
+            if(TestMoveLegit(move, true)){
                 sMoves.Add(move);
             }
             move = new SquareXY((ix.x +1), (ix.y + 2));
-            if(TestMoveLegit(move)){
+            if(TestMoveLegit(move, true)){
                 sMoves.Add(move);
             }
 
@@ -204,7 +199,7 @@ public class Board : MonoBehaviour
         {
             sMoves.Add(new SquareXY(ix.x, (ix.y+1)));
             // can't know en passant yet
-            if(ix.y == 2){
+            if(ix.y == 1){
                 sMoves.Add(new SquareXY(ix.x, (ix.y+2)));
             }
             return sMoves;
@@ -236,16 +231,26 @@ public class Board : MonoBehaviour
     }
 
     // For now, only test if on board
-    public bool TestMoveLegit(SquareXY move)
+    public bool TestMoveLegit(SquareXY move, bool checkForOwnPiece = false)
     {
-        if(move.x >= 0 && move.x < 8)
+        bool moveIsLegit = true;
+        if(move.x < 0 || move.x > 7 || move.y < 0 || move.y > 7)
         {
-            if(move.y >= 0 && move.y < 8)
-            {
-                return true;
-            }
+            return false;
         }
-        return false;
+
+
+        // now check if own piece is already on square
+        bool ownPieceBlocking = false;
+        // hack, won't let you capture enemy pieces.
+        if(_squares[move.x, move.y]._d._PCE != PIECE.EMPTY){
+            ownPieceBlocking = true;
+        }
+        if(checkForOwnPiece){
+            moveIsLegit ^= ownPieceBlocking;
+        }
+
+        return moveIsLegit;
     }
 
     // // So they know which piece it is, and where it is.
