@@ -43,7 +43,7 @@ public class Board : MonoBehaviour
     public Text                 _textMoveLegal;
     public Text                 _textMoveList;
 
-    public PIECE                _selectedPiece;
+    public uint                 _selectedPiece;
     public bool                 _pieceSelected = false;
     public Vector2Int           _ixSelSq;
 
@@ -62,7 +62,7 @@ public class Board : MonoBehaviour
         RenderBoard();
     }
 
-    public string ConvertMoveListToText(List<SquareXY> moves)
+    public string ConvertMoveListToText(List<Vector2Int> moves)
     {
         if(moves == null){
             return "No moves selected, list null";
@@ -84,109 +84,109 @@ public class Board : MonoBehaviour
         if(_pieceSelected)
         {
             if(Input.GetMouseButtonDown(0)){
-                HandleSelecingDeselecting(true);
+                HandleSelectingDeselecting(true);
             }
-            _textMoveList.text = ConvertMoveListToText(ShowMoveListForSelectedPiece(_selectedPiece, _ixSelSq));
+            _textMoveList.text = ConvertMoveListToText(ShowMoveListForSelectedPiece(_ixSelSq));
         }else {
             if(Input.GetMouseButtonDown(0)){
-                HandleSelecingDeselecting(false);
+                HandleSelectingDeselecting(false);
             }
-            _textMoveList.text = ConvertMoveListToText(ShowMoveListForSelectedPiece(_selectedPiece, _ixSelSq));
+            _textMoveList.text = ConvertMoveListToText(ShowMoveListForSelectedPiece(_ixSelSq));
         }
 
     }
 
         // So they know which piece it is, and where it is.
-    private List<SquareXY> ShowMoveListForSelectedPiece(PIECE piece, Vector2Int ix)
+    private List<Vector2Int> ShowMoveListForSelectedPiece(Vector2Int ix)
     {
-        if(piece == PIECE.EMPTY){
+        if(_squares[ix.x, ix.y]._d._uInfo == PieceInfo._noType){
             Debug.Log("No piece selected");
             return null;
         }
 
-        List<SquareXY> sMoves = new List<SquareXY>();
-        if(piece == PIECE.WHITE_KNIGHT){
-            SquareXY move;
-            move = new SquareXY(ix.x-2, ix.y+1);
-            if(TestMoveLegit(move, true)){
-                sMoves.Add(move);
+        List<Vector2Int> sMoves = new List<Vector2Int>();
+        if((_squares[ix.x, ix.y]._d._uInfo & PieceInfo._knight) == PieceInfo._knight){
+            Vector2Int moveDest;
+            moveDest = new Vector2Int(ix.x-2, ix.y+1);
+            if(TestMoveLegit(moveDest, ix, true)){
+                sMoves.Add(moveDest);
             }
 
-            move = new SquareXY((ix.x-2), (ix.y-1));
-            if(TestMoveLegit(move, true)){
-                sMoves.Add(move);
+            moveDest = new Vector2Int((ix.x-2), (ix.y-1));
+            if(TestMoveLegit(moveDest, ix, true)){
+                sMoves.Add(moveDest);
             }
-            move = new SquareXY((ix.x+2), (ix.y+1));
-            if(TestMoveLegit(move, true)){
-                sMoves.Add(move);
+            moveDest = new Vector2Int((ix.x+2), (ix.y+1));
+            if(TestMoveLegit(moveDest, ix, true)){
+                sMoves.Add(moveDest);
             }
-            move = new SquareXY((ix.x+2), (ix.y-1));
-            if(TestMoveLegit(move, true)){
-                sMoves.Add(move);
+            moveDest = new Vector2Int((ix.x+2), (ix.y-1));
+            if(TestMoveLegit(moveDest, ix, true)){
+                sMoves.Add(moveDest);
             }
-            move = new SquareXY((ix.x -1), (ix.y - 2));
-            if(TestMoveLegit(move, true)){
-                sMoves.Add(move);
+            moveDest = new Vector2Int((ix.x -1), (ix.y - 2));
+            if(TestMoveLegit(moveDest, ix, true)){
+                sMoves.Add(moveDest);
             }
-            move = new SquareXY((ix.x -1), (ix.y + 2));
-            if(TestMoveLegit(move, true)){
-                sMoves.Add(move);
+            moveDest = new Vector2Int((ix.x -1), (ix.y + 2));
+            if(TestMoveLegit(moveDest, ix, true)){
+                sMoves.Add(moveDest);
             }
-            move = new SquareXY((ix.x +1), (ix.y - 2));
-            if(TestMoveLegit(move, true)){
-                sMoves.Add(move);
+            moveDest = new Vector2Int((ix.x +1), (ix.y - 2));
+            if(TestMoveLegit(moveDest, ix, true)){
+                sMoves.Add(moveDest);
             }
-            move = new SquareXY((ix.x +1), (ix.y + 2));
-            if(TestMoveLegit(move, true)){
-                sMoves.Add(move);
+            moveDest = new Vector2Int((ix.x +1), (ix.y + 2));
+            if(TestMoveLegit(moveDest, ix, true)){
+                sMoves.Add(moveDest);
             }
 
             return sMoves;
         }
 
         // here we move all the way along a diagonal.
-        if(piece == PIECE.WHITE_BISHOP)
+        if((_squares[ix.x, ix.y]._d._uInfo & PieceInfo._bishop) == PieceInfo._bishop)
         {
             int xTemp = ix.x;
             int yTemp = ix.y;
             while(xTemp < 8 && yTemp < 8)
             {
                 xTemp++; yTemp++;
-                sMoves.Add(new SquareXY(xTemp, yTemp));
+                sMoves.Add(new Vector2Int(xTemp, yTemp));
             }
             xTemp = ix.x;
             yTemp = ix.y;
             while(xTemp > 1 && yTemp > 1)
             {
                 xTemp--; yTemp--; 
-                sMoves.Add(new SquareXY(xTemp, yTemp));
+                sMoves.Add(new Vector2Int(xTemp, yTemp));
             }
             xTemp = ix.x;
             yTemp = ix.y;
             while(xTemp > 1 && yTemp < 8)
             {
                 xTemp--; yTemp++; 
-                sMoves.Add(new SquareXY(xTemp, yTemp));
+                sMoves.Add(new Vector2Int(xTemp, yTemp));
             }
             xTemp = ix.x;
             yTemp = ix.y;
             while(xTemp < 8 && yTemp > 1)
             {
                 xTemp++; yTemp--; 
-                sMoves.Add(new SquareXY(xTemp, yTemp));
+                sMoves.Add(new Vector2Int(xTemp, yTemp));
             }
             return sMoves;
         }
 
         // can move all the way in x or all the way in y
-        if(piece == PIECE.WHITE_ROOK)
+        if((_squares[ix.x, ix.y]._d._uInfo & PieceInfo._rook) == PieceInfo._rook)
         {
             for(int x = 1; x<9; x++)
             {
-                sMoves.Add(new SquareXY(x, ix.y));
+                sMoves.Add(new Vector2Int(x, ix.y));
             }
             for(int y=1; y<9; y++){
-                sMoves.Add(new SquareXY(ix.x, y));
+                sMoves.Add(new Vector2Int(ix.x, y));
             }
             return sMoves;
         }
@@ -195,34 +195,34 @@ public class Board : MonoBehaviour
 
         // also, if we can capture, we can move diagonally.
         // pawn, have to factor in en passant, as well as two squares on first move.
-        if(piece == PIECE.WHITE_PAWN)
+        if((_squares[ix.x, ix.y]._d._uInfo & PieceInfo._pawn) == PieceInfo._pawn)
         {
-            sMoves.Add(new SquareXY(ix.x, (ix.y+1)));
+            sMoves.Add(new Vector2Int(ix.x, (ix.y+1)));
             // can't know en passant yet
             if(ix.y == 1){
-                sMoves.Add(new SquareXY(ix.x, (ix.y+2)));
+                sMoves.Add(new Vector2Int(ix.x, (ix.y+2)));
             }
             return sMoves;
         }
 
-        if(piece == PIECE.WHITE_QUEEN)
+        if((_squares[ix.x, ix.y]._d._uInfo & PieceInfo._queen) == PieceInfo._queen)
         {
             Debug.Log("Queen not implemented yet");
             return null;
         }
 
-        if(piece == PIECE.WHITE_KING){
+        if((_squares[ix.x, ix.y]._d._uInfo & PieceInfo._king) == PieceInfo._king){
             int x = ix.x-1;
-            sMoves.Add(new SquareXY(x, (ix.y-1)));
-            sMoves.Add(new SquareXY(x, (ix.y+1)));
-            sMoves.Add(new SquareXY(x, (ix.y)));
+            sMoves.Add(new Vector2Int(x, (ix.y-1)));
+            sMoves.Add(new Vector2Int(x, (ix.y+1)));
+            sMoves.Add(new Vector2Int(x, (ix.y)));
             x += 2;
-            sMoves.Add(new SquareXY(x, (ix.y-1)));
-            sMoves.Add(new SquareXY(x, (ix.y+1)));
-            sMoves.Add(new SquareXY(x, (ix.y)));
+            sMoves.Add(new Vector2Int(x, (ix.y-1)));
+            sMoves.Add(new Vector2Int(x, (ix.y+1)));
+            sMoves.Add(new Vector2Int(x, (ix.y)));
             x = ix.x;
-            sMoves.Add(new SquareXY(x, (ix.y+1)));
-            sMoves.Add(new SquareXY(x, (ix.y-1)));
+            sMoves.Add(new Vector2Int(x, (ix.y+1)));
+            sMoves.Add(new Vector2Int(x, (ix.y-1)));
             return sMoves;
         }
 
@@ -231,19 +231,30 @@ public class Board : MonoBehaviour
     }
 
     // For now, only test if on board
-    public bool TestMoveLegit(SquareXY move, bool checkForOwnPiece = false)
+    public bool TestMoveLegit(Vector2Int dest, Vector2Int cur, bool checkForOwnPiece = false)
     {
         bool moveIsLegit = true;
-        if(move.x < 0 || move.x > 7 || move.y < 0 || move.y > 7)
+        if(dest.x < 0 || dest.x > 7 || dest.y < 0 || dest.y > 7)
         {
             return false;
         }
 
+        uint pieceInfo = _squares[cur.x, cur.y]._d._uInfo;
 
         // now check if own piece is already on square
         bool ownPieceBlocking = false;
         // hack, won't let you capture enemy pieces.
-        if(_squares[move.x, move.y]._d._PCE != PIECE.EMPTY){
+        uint col = 0;
+        if((pieceInfo & PieceInfo._white) == PieceInfo._white){
+            col = PieceInfo._white;
+        }
+        else if((pieceInfo & PieceInfo._black) == PieceInfo._black){
+            col = PieceInfo._black;
+        }else{
+            Debug.Log("No piece colour for this... explain");
+        }
+
+        if((_squares[dest.x, dest.y]._d._uInfo & col) == col){
             ownPieceBlocking = true;
         }
         if(checkForOwnPiece){
@@ -253,120 +264,7 @@ public class Board : MonoBehaviour
         return moveIsLegit;
     }
 
-    // // So they know which piece it is, and where it is.
-    // private string ShowMoveListForSelectedPiece(PIECE piece, Vector2Int ix)
-    // {
-    //     if(piece == PIECE.EMPTY){
-    //         return "No piece selected";
-    //     }
-
-    //     // have to go from 0-7 to 1-8
-    //     ix.x += 1;
-    //     ix.y += 1;
-
-    //     Debug.Log(ix);
-
-    //     string sMoves = "";
-    //     if(piece == PIECE.WHITE_KNIGHT){
-
-    //         sMoves += (ix.x-2) + "," + (ix.y+1);
-    //         sMoves += "\n" + (ix.x-2) + "," + (ix.y-1);
-    //         sMoves += "\n" + (ix.x+2) + "," + (ix.y+1);
-    //         sMoves += "\n" + (ix.x+2) + "," + (ix.y-1);
-    //         sMoves += "\n" + (ix.x - 1) + "," + (ix.y - 2);
-    //         sMoves += "\n" + (ix.x - 1) + "," + (ix.y + 2);
-    //         sMoves += "\n" + (ix.x + 1) + "," + (ix.y - 2);
-    //         sMoves += "\n" + (ix.x + 1) + "," + (ix.y + 2);
-
-    //         return sMoves;
-    //     }
-
-    //     // here we move all the way along a diagonal.
-    //     if(piece == PIECE.WHITE_BISHOP)
-    //     {
-    //         int xTemp = ix.x;
-    //         int yTemp = ix.y;
-    //         while(xTemp < 8 && yTemp < 8)
-    //         {
-    //             xTemp++; yTemp++;
-    //             sMoves += "\n" + xTemp + "," + yTemp;
-    //         }
-    //         xTemp = ix.x;
-    //         yTemp = ix.y;
-    //         while(xTemp > 1 && yTemp > 1)
-    //         {
-    //             xTemp--; yTemp--; 
-    //             sMoves += "\n" + xTemp + "," + yTemp;
-    //         }
-    //         xTemp = ix.x;
-    //         yTemp = ix.y;
-    //         while(xTemp > 1 && yTemp < 8)
-    //         {
-    //             xTemp--; yTemp++; 
-    //             sMoves += "\n" + xTemp + "," + yTemp;
-    //         }
-    //         xTemp = ix.x;
-    //         yTemp = ix.y;
-    //         while(xTemp < 8 && yTemp > 1)
-    //         {
-    //             xTemp++; yTemp--; 
-    //             sMoves += "\n" + xTemp + "," + yTemp;
-    //         }
-    //         return sMoves;
-    //     }
-
-    //     // can move all the way in x or all the way in y
-    //     if(piece == PIECE.WHITE_ROOK)
-    //     {
-    //         for(int x = 1; x<9; x++)
-    //         {
-    //             sMoves += x + "," + ix.y + "\n";
-    //         }
-    //         for(int y=1; y<9; y++){
-    //             sMoves += ix.x + "," + y + "\n";
-    //         }
-    //         return sMoves;
-    //     }
-
-    //     // queen, maybe just return rook and bishop moves?
-
-    //     // also, if we can capture, we can move diagonally.
-    //     // pawn, have to factor in en passant, as well as two squares on first move.
-    //     if(piece == PIECE.WHITE_PAWN)
-    //     {
-    //         sMoves += ix.x + "," + (ix.y+1) + "\n";
-    //         // can't know en passant yet
-    //         if(ix.y == 2){
-    //             sMoves += ix.x + "," + (ix.y+2) + "\n";
-    //         }
-    //         return sMoves;
-    //     }
-
-    //     if(piece == PIECE.WHITE_QUEEN)
-    //     {
-    //         return "rook plus bishop";
-    //     }
-
-    //     if(piece == PIECE.WHITE_KING){
-    //         int x = ix.x-1;
-    //         sMoves += x + "," + (ix.y-1) + "\n";
-    //         sMoves += x + "," + (ix.y+1) + "\n";
-    //         sMoves += x + "," + (ix.y) + "\n";
-    //         x += 2;
-    //         sMoves += x + "," + (ix.y-1) + "\n";
-    //         sMoves += x + "," + (ix.y+1) + "\n";
-    //         sMoves += x + "," + (ix.y) + "\n";
-    //         x = ix.x;
-    //         sMoves += x + "," + (ix.y+1) + "\n";
-    //         sMoves += x + "," + (ix.y-1) + "\n";
-    //         return sMoves;
-    //     }
-
-
-    //     return "error finding piece moves";
-    // }
-
-    private void HandleSelecingDeselecting(bool curSelected)
+    private void HandleSelectingDeselecting(bool curSelected)
     {
         if(curSelected)
         {
@@ -383,17 +281,17 @@ public class Board : MonoBehaviour
 
                     // If we have a piece selected, move it to the new square
                     if(_pieceSelected){
-                        s._d._PCE = _selectedPiece;
+                        s._d._uInfo = _selectedPiece;
                         // now make the square of _ixSelSq not have that piece anymore.
                     }
 
                     Debug.Log(s._d._pos.x);
                     Debug.Log(s._d._pos.y);
-                    Debug.Log(s._d._PCE);
-                    if(s._d._PCE != PIECE.EMPTY){
+                    Debug.Log(s._d._uInfo);
+                    if(s._d._uInfo != PieceInfo._noType){
                         _pieceSelected = false;
-                        _selectedPiece = PIECE.EMPTY;
-                        _squares[_ixSelSq.x, _ixSelSq.y]._d._PCE = PIECE.EMPTY;
+                        _selectedPiece = PieceInfo._noType;
+                        _squares[_ixSelSq.x, _ixSelSq.y]._d._uInfo = PieceInfo._noType;
                     }
                     _pieceText.text = "Piece Moved";
                 }
@@ -415,9 +313,9 @@ public class Board : MonoBehaviour
 
                     Debug.Log(s._d._pos.x);
                     Debug.Log(s._d._pos.y);
-                    Debug.Log(s._d._PCE);
-                    if(s._d._PCE != PIECE.EMPTY){
-                        _selectedPiece = s._d._PCE;
+                    Debug.Log(s._d._uInfo);
+                    if(s._d._uInfo != PieceInfo._noType){
+                        _selectedPiece = s._d._uInfo;
                         _pieceSelected = true;
                         _ixSelSq.x = s._d._pos.x;
                         _ixSelSq.y = s._d._pos.y;
@@ -455,38 +353,42 @@ public class Board : MonoBehaviour
                 }
 
                 _squares[x,y]._d._pos.x = x; _squares[x,y]._d._pos.y = y;
-                _squares[x,y]._d._PCE = PIECE.EMPTY;
+                _squares[x,y]._d._uInfo = 0;        // no piece type, no piece colour
 
                 if(y == 0){
+                    _squares[x,y]._d._uInfo |= PieceInfo._white;
                     if(x == 0 || x == 7){
-                        _squares[x,y]._d._PCE = PIECE.WHITE_ROOK;
+                        _squares[x,y]._d._uInfo |= PieceInfo._rook;
                     }else if(x == 1 || x == 6){
-                        _squares[x,y]._d._PCE = PIECE.WHITE_KNIGHT;
+                        _squares[x,y]._d._uInfo |= PieceInfo._knight;
                     }else if(x == 2 || x == 5){
-                        _squares[x,y]._d._PCE = PIECE.WHITE_BISHOP;
+                        _squares[x,y]._d._uInfo |= PieceInfo._bishop;
                     }else if(x == 3){
-                        _squares[x,y]._d._PCE = PIECE.WHITE_QUEEN;
+                        _squares[x,y]._d._uInfo |= PieceInfo._queen;
                     }else if(x == 4){
-                        _squares[x,y]._d._PCE = PIECE.WHITE_KING;
+                        _squares[x,y]._d._uInfo |= PieceInfo._king;
                     }
                 }
                 if(y == 1){
-                    _squares[x,y]._d._PCE = PIECE.WHITE_PAWN;
+                    _squares[x,y]._d._uInfo |= PieceInfo._white;
+                    _squares[x,y]._d._uInfo |= PieceInfo._pawn;
                 }
                 if(y == 6){
-                    _squares[x,y]._d._PCE = PIECE.BLACK_PAWN;
+                    _squares[x,y]._d._uInfo |= PieceInfo._black;
+                    _squares[x,y]._d._uInfo |= PieceInfo._pawn;
                 }
                 if(y == 7){
+                    _squares[x,y]._d._uInfo |= PieceInfo._black;
                     if(x == 0 || x == 7){
-                        _squares[x,y]._d._PCE = PIECE.BLACK_ROOK;
+                        _squares[x,y]._d._uInfo |= PieceInfo._rook;
                     }else if(x == 1 || x == 6){
-                        _squares[x,y]._d._PCE = PIECE.BLACK_KNIGHT;
+                        _squares[x,y]._d._uInfo |= PieceInfo._knight;
                     }else if(x == 2 || x == 5){
-                        _squares[x,y]._d._PCE = PIECE.BLACK_BISHOP;
+                        _squares[x,y]._d._uInfo |= PieceInfo._bishop;
                     }else if(x == 3){
-                        _squares[x,y]._d._PCE = PIECE.BLACK_QUEEN;
+                        _squares[x,y]._d._uInfo |= PieceInfo._queen;
                     }else if(x == 4){
-                        _squares[x,y]._d._PCE = PIECE.BLACK_KING;
+                        _squares[x,y]._d._uInfo |= PieceInfo._king;
                     }
                 }
             }
@@ -510,7 +412,7 @@ public class Board : MonoBehaviour
         {
             for(int x=0; x<8; x++)
             {
-                if(_squares[x,y]._d._PCE == PIECE.EMPTY){
+                if((_squares[x,y]._d._uInfo & PieceInfo._noType) == PieceInfo._noType){
                     continue;
                 }
                 
@@ -519,29 +421,29 @@ public class Board : MonoBehaviour
                 pos.x -= 256 - 32; pos.x += 64*x;
                 pos.y -= 256 - 32; pos.y += 64*y;
 
-                if(_squares[x,y]._d._PCE == PIECE.WHITE_PAWN){
+                if(((_squares[x,y]._d._uInfo & PieceInfo._white) == PieceInfo._white) && ((_squares[x,y]._d._uInfo & PieceInfo._pawn) == PieceInfo._pawn)){
                     Instantiate(PF_WhitePawn, pos, transform.rotation);
-                } else if(_squares[x,y]._d._PCE == PIECE.WHITE_BISHOP){
+                } else if(((_squares[x,y]._d._uInfo & PieceInfo._white) == PieceInfo._white) && ((_squares[x,y]._d._uInfo & PieceInfo._bishop) == PieceInfo._bishop)){
                     Instantiate(PF_WhiteBishop, pos, transform.rotation);
-                } else if(_squares[x,y]._d._PCE == PIECE.WHITE_KNIGHT){
+                } else if(((_squares[x,y]._d._uInfo & PieceInfo._white) == PieceInfo._white) && ((_squares[x,y]._d._uInfo & PieceInfo._knight) == PieceInfo._knight)){
                     Instantiate(PF_WhiteKnight, pos, transform.rotation);
-                } else if(_squares[x,y]._d._PCE == PIECE.WHITE_ROOK){
+                } else if(((_squares[x,y]._d._uInfo & PieceInfo._white) == PieceInfo._white) && ((_squares[x,y]._d._uInfo & PieceInfo._rook) == PieceInfo._rook)){
                     Instantiate(PF_WhiteRook, pos, transform.rotation);
-                } else if(_squares[x,y]._d._PCE == PIECE.WHITE_QUEEN){
+                } else if(((_squares[x,y]._d._uInfo & PieceInfo._white) == PieceInfo._white) && ((_squares[x,y]._d._uInfo & PieceInfo._queen) == PieceInfo._queen)){
                     Instantiate(PF_WhiteQueen, pos, transform.rotation);
-                } else if(_squares[x,y]._d._PCE == PIECE.WHITE_KING){
+                } else if(((_squares[x,y]._d._uInfo & PieceInfo._white) == PieceInfo._white) && ((_squares[x,y]._d._uInfo & PieceInfo._king) == PieceInfo._king)){
                     Instantiate(PF_WhiteKing, pos, transform.rotation);
-                } else if(_squares[x,y]._d._PCE == PIECE.BLACK_PAWN){
+                } else if(((_squares[x,y]._d._uInfo & PieceInfo._black) == PieceInfo._black) && ((_squares[x,y]._d._uInfo & PieceInfo._pawn) == PieceInfo._pawn)){
                     Instantiate(PF_BlackPawn, pos, transform.rotation);
-                } else if(_squares[x,y]._d._PCE == PIECE.BLACK_BISHOP){
+                } else if(((_squares[x,y]._d._uInfo & PieceInfo._black) == PieceInfo._black) && ((_squares[x,y]._d._uInfo & PieceInfo._bishop) == PieceInfo._bishop)){
                     Instantiate(PF_BlackBishop, pos, transform.rotation);
-                } else if(_squares[x,y]._d._PCE == PIECE.BLACK_KNIGHT){
+                } else if(((_squares[x,y]._d._uInfo & PieceInfo._black) == PieceInfo._black) && ((_squares[x,y]._d._uInfo & PieceInfo._knight) == PieceInfo._knight)){
                     Instantiate(PF_BlackKnight, pos, transform.rotation);
-                } else if(_squares[x,y]._d._PCE == PIECE.BLACK_ROOK){
+                } else if(((_squares[x,y]._d._uInfo & PieceInfo._black) == PieceInfo._black) && ((_squares[x,y]._d._uInfo & PieceInfo._rook) == PieceInfo._rook)){
                     Instantiate(PF_BlackRook, pos, transform.rotation);
-                } else if(_squares[x,y]._d._PCE == PIECE.BLACK_QUEEN){
+                } else if(((_squares[x,y]._d._uInfo & PieceInfo._black) == PieceInfo._black) && ((_squares[x,y]._d._uInfo & PieceInfo._queen) == PieceInfo._queen)){
                     Instantiate(PF_BlackQueen, pos, transform.rotation);
-                } else if(_squares[x,y]._d._PCE == PIECE.BLACK_KING){
+                } else if(((_squares[x,y]._d._uInfo & PieceInfo._black) == PieceInfo._black) && ((_squares[x,y]._d._uInfo & PieceInfo._king) == PieceInfo._king)){
                     Instantiate(PF_BlackKing, pos, transform.rotation);
                 }
             }

@@ -3,6 +3,18 @@ The board we play on.
 *************************************************************************************/
 using UnityEngine;
 
+public static class PieceInfo{
+    public static uint           _white = 1<<1;
+    public static uint           _black = 1<<2;
+    public static uint           _knight = 1<<3;
+    public static uint           _bishop = 1<<4;
+    public static uint           _rook = 1<<5;
+    public static uint           _queen = 1<<6;
+    public static uint           _king = 1<<7;
+    public static uint           _pawn = 1<<8;
+    public static uint           _noType = 1<<9;
+}
+
 public struct DT_BD
 {
     public DT_BD(int size = 8){
@@ -23,23 +35,13 @@ public struct DT_BD
     public DT_SQ[,]         _Squares;
 }
 
-public class SquareXY{
-    public int x;
-    public int y;
-    public SquareXY(int xPassed, int yPassed){
-        x = xPassed;
-        y = yPassed;
-    }
-}
-
-
 public enum SQUARE_COLOUR{WHITE, BLACK};
-public enum PIECE{EMPTY, WHITE_KING, BLACK_KING, WHITE_QUEEN, BLACK_QUEEN, WHITE_ROOK, BLACK_ROOK, WHITE_BISHOP, BLACK_BISHOP, WHITE_KNIGHT, BLACK_KNIGHT, WHITE_PAWN, BLACK_PAWN};
+
 public struct DT_SQ
 {
     public SQUARE_COLOUR            _COL;
     public Vector2Int               _pos;
 
-    public PIECE                    _PCE;
+    public uint                     _uInfo;
 }
 
