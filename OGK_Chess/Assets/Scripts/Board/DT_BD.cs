@@ -42,6 +42,7 @@ public struct DT_SQ
     public SQUARE_COLOUR            _COL;
     public Vector2Int               _pos;
 
+    // Weird. This is the info for the piece on the square. Poor way of doing things.
     public uint                     _uInfo;
 }
 

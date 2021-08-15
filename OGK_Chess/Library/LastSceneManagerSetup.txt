@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/Scenes/QuickPlay.unity
+- path: Assets/Scenes/MoveTest.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0

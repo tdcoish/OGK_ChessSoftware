@@ -614,6 +614,35 @@ MonoBehaviour:
     type: 3}
   PF_BlackPawn: {fileID: 1790231777117082925, guid: 59487da36d08bf84f88a6ecc84e37454,
     type: 3}
+--- !u!1 &1093855656
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1093855658}
+  - component: {fileID: 1093855657}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1093855657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1093855656}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe9380d94fb833d4dbc9df93babdfcb8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
   _text: {fileID: 2025856256}
   _hitText: {fileID: 1404878528}
   _pieceText: {fileID: 731654955}
@@ -622,6 +651,21 @@ MonoBehaviour:
   _selectedPiece: 0
   _pieceSelected: 0
   _ixSelSq: {x: 0, y: 0}
+  _whiteTurn: 0
+--- !u!4 &1093855658
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1093855656}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -224.06543, y: -224.12085, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1176597246
 GameObject:
   m_ObjectHideFlags: 0
